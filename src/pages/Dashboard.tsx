@@ -119,7 +119,12 @@ const Dashboard = () => {
           <div className="flex flex-wrap gap-3">
             <Button variant="hero" onClick={handleStartTasking}>Start Tasking</Button>
             <Button variant="glow" onClick={() => toast.info("Task posting opens in phase 2.")}>Post Task</Button>
-            <Button variant="secondary" onClick={() => setWithdrawOpen(true)}>Withdraw</Button>
+            <Button
+              onClick={() => setWithdrawOpen(true)}
+              className="bg-green-500 text-black font-black uppercase tracking-wide shadow-[0_0_25px_rgba(34,197,94,0.6)] hover:bg-green-400 hover:scale-[1.03] border-2 border-green-300"
+            >
+              Withdraw
+            </Button>
           </div>
         </div>
 
