@@ -25,6 +25,13 @@ const Dashboard = () => {
   const [wallet, setWallet] = useState<any>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [method, setMethod] = useState<"mpesa" | "paypal">("mpesa");
+  const [wAmount, setWAmount] = useState("");
+  const [wName, setWName] = useState("");
+  const [wPhone, setWPhone] = useState("");
+  const [wEmail, setWEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard | SWAS Tasks";
