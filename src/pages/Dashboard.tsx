@@ -95,7 +95,7 @@ const Dashboard = () => {
             <p className="text-center text-sm text-muted-foreground">Member since: {memberYear}</p>
 
             <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Tasks Posted</p></div>
+              <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">826</p><p className="text-xs text-muted-foreground">Tasks Posted</p></div>
               <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Tasks Completed</p></div>
               <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Bids Made</p></div>
             </div>
