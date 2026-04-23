@@ -195,6 +195,56 @@ const Dashboard = () => {
         </div>
       </main>
       <Footer />
+
+      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Withdraw Funds</DialogTitle>
+            <DialogDescription>
+              Available balance: <span className="font-bold text-primary">KES {Number(wallet?.balance ?? 0).toFixed(2)}</span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs value={method} onValueChange={(v) => setMethod(v as "mpesa" | "paypal")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="mpesa">M-PESA</TabsTrigger>
+              <TabsTrigger value="paypal">PayPal</TabsTrigger>
+            </TabsList>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <Label>Amount (KES)</Label>
+                <Input type="number" min="1" value={wAmount} onChange={(e) => setWAmount(e.target.value)} placeholder="0" />
+              </div>
+            </div>
+
+            <TabsContent value="mpesa" className="mt-3 space-y-3">
+              <div>
+                <Label>Full Name</Label>
+                <Input value={wName} onChange={(e) => setWName(e.target.value)} placeholder="John Doe" />
+              </div>
+              <div>
+                <Label>M-PESA Phone Number</Label>
+                <Input value={wPhone} onChange={(e) => setWPhone(e.target.value)} placeholder="07XXXXXXXX" />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="paypal" className="mt-3 space-y-3">
+              <div>
+                <Label>PayPal Email</Label>
+                <Input type="email" value={wEmail} onChange={(e) => setWEmail(e.target.value)} placeholder="you@example.com" />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWithdrawOpen(false)} disabled={submitting}>Cancel</Button>
+            <Button variant="hero" onClick={handleWithdraw} disabled={submitting}>
+              {submitting ? "Processing…" : "Submit Withdrawal"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
