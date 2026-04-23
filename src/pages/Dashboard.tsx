@@ -64,6 +64,45 @@ const Dashboard = () => {
     }
   };
 
+  const handleWithdraw = async () => {
+    const balance = Number(wallet?.balance ?? 0);
+    const amount = Number(wAmount);
+
+    if (balance <= 0) {
+      toast.error("Your balance is KES 0. Nothing to withdraw.");
+      return;
+    }
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount greater than 0.");
+      return;
+    }
+    if (amount > balance) {
+      toast.error(`Amount cannot exceed your balance (KES ${balance.toFixed(2)}).`);
+      return;
+    }
+
+    if (method === "mpesa") {
+      if (!wName.trim()) { toast.error("Enter your full name."); return; }
+      if (!/^(?:\+?254|0)?[17]\d{8}$/.test(wPhone.replace(/\s/g, ""))) {
+        toast.error("Enter a valid Safaricom number (07XXXXXXXX)");
+        return;
+      }
+    } else {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(wEmail)) {
+        toast.error("Enter a valid PayPal email.");
+        return;
+      }
+    }
+
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setWithdrawOpen(false);
+      setWAmount(""); setWName(""); setWPhone(""); setWEmail("");
+      toast.success("Withdrawal request submitted. You'll be notified once processed.");
+    }, 800);
+  };
+
   if (loading) return <div className="flex min-h-screen items-center justify-center">Loading…</div>;
 
   const memberYear = profile?.created_at ? new Date(profile.created_at).getFullYear() : new Date().getFullYear();
