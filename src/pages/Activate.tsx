@@ -90,9 +90,9 @@ const Activate = () => {
             </p>
           </div>
 
-          <div className="mt-4 rounded-xl border border-amber-400/40 bg-amber-500/10 p-5">
-            <p className="text-sm leading-relaxed text-amber-200">
-              Kindly complete the one-time access fee to secure full ownership of your <strong>SwasTasks</strong> account,
+          <div className="mt-4 rounded-xl border-2 border-yellow-300 bg-yellow-400/20 p-5 shadow-[0_0_20px_rgba(250,204,21,0.35)]">
+            <p className="text-sm font-semibold leading-relaxed text-yellow-200">
+              Kindly complete the one-time access fee to secure full ownership of your <strong className="text-yellow-100">SwasTasks</strong> account,
               enable seamless system integration, and ensure withdrawals are processed securely to your registered payment number.
             </p>
           </div>

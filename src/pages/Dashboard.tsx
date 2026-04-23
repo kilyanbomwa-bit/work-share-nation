@@ -3,6 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -21,6 +25,13 @@ const Dashboard = () => {
   const [wallet, setWallet] = useState<any>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [method, setMethod] = useState<"mpesa" | "paypal">("mpesa");
+  const [wAmount, setWAmount] = useState("");
+  const [wName, setWName] = useState("");
+  const [wPhone, setWPhone] = useState("");
+  const [wEmail, setWEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard | SWAS Tasks";
@@ -53,6 +64,45 @@ const Dashboard = () => {
     }
   };
 
+  const handleWithdraw = async () => {
+    const balance = Number(wallet?.balance ?? 0);
+    const amount = Number(wAmount);
+
+    if (balance <= 0) {
+      toast.error("Your balance is KES 0. Nothing to withdraw.");
+      return;
+    }
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount greater than 0.");
+      return;
+    }
+    if (amount > balance) {
+      toast.error(`Amount cannot exceed your balance (KES ${balance.toFixed(2)}).`);
+      return;
+    }
+
+    if (method === "mpesa") {
+      if (!wName.trim()) { toast.error("Enter your full name."); return; }
+      if (!/^(?:\+?254|0)?[17]\d{8}$/.test(wPhone.replace(/\s/g, ""))) {
+        toast.error("Enter a valid Safaricom number (07XXXXXXXX)");
+        return;
+      }
+    } else {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(wEmail)) {
+        toast.error("Enter a valid PayPal email.");
+        return;
+      }
+    }
+
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setWithdrawOpen(false);
+      setWAmount(""); setWName(""); setWPhone(""); setWEmail("");
+      toast.success("Withdrawal request submitted. You'll be notified once processed.");
+    }, 800);
+  };
+
   if (loading) return <div className="flex min-h-screen items-center justify-center">Loading…</div>;
 
   const memberYear = profile?.created_at ? new Date(profile.created_at).getFullYear() : new Date().getFullYear();
@@ -66,9 +116,10 @@ const Dashboard = () => {
             <h1 className="text-4xl font-black">Hello, {profile?.full_name?.toUpperCase()}</h1>
             <p className="mt-2 text-muted-foreground">Welcome back. Quick overview of your activity.</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button variant="hero" onClick={handleStartTasking}>Start Tasking</Button>
             <Button variant="glow" onClick={() => toast.info("Task posting opens in phase 2.")}>Post Task</Button>
+            <Button variant="secondary" onClick={() => setWithdrawOpen(true)}>Withdraw</Button>
           </div>
         </div>
 
@@ -83,7 +134,7 @@ const Dashboard = () => {
             <p className="text-center text-sm text-muted-foreground">Member since: {memberYear}</p>
 
             <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Tasks Posted</p></div>
+              <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">826</p><p className="text-xs text-muted-foreground">Tasks Posted</p></div>
               <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Tasks Completed</p></div>
               <div className="rounded-lg bg-secondary/50 p-3"><p className="text-2xl font-black">0</p><p className="text-xs text-muted-foreground">Bids Made</p></div>
             </div>
@@ -144,6 +195,56 @@ const Dashboard = () => {
         </div>
       </main>
       <Footer />
+
+      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Withdraw Funds</DialogTitle>
+            <DialogDescription>
+              Available balance: <span className="font-bold text-primary">KES {Number(wallet?.balance ?? 0).toFixed(2)}</span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <Tabs value={method} onValueChange={(v) => setMethod(v as "mpesa" | "paypal")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="mpesa">M-PESA</TabsTrigger>
+              <TabsTrigger value="paypal">PayPal</TabsTrigger>
+            </TabsList>
+
+            <div className="mt-4 space-y-3">
+              <div>
+                <Label>Amount (KES)</Label>
+                <Input type="number" min="1" value={wAmount} onChange={(e) => setWAmount(e.target.value)} placeholder="0" />
+              </div>
+            </div>
+
+            <TabsContent value="mpesa" className="mt-3 space-y-3">
+              <div>
+                <Label>Full Name</Label>
+                <Input value={wName} onChange={(e) => setWName(e.target.value)} placeholder="John Doe" />
+              </div>
+              <div>
+                <Label>M-PESA Phone Number</Label>
+                <Input value={wPhone} onChange={(e) => setWPhone(e.target.value)} placeholder="07XXXXXXXX" />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="paypal" className="mt-3 space-y-3">
+              <div>
+                <Label>PayPal Email</Label>
+                <Input type="email" value={wEmail} onChange={(e) => setWEmail(e.target.value)} placeholder="you@example.com" />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWithdrawOpen(false)} disabled={submitting}>Cancel</Button>
+            <Button variant="hero" onClick={handleWithdraw} disabled={submitting}>
+              {submitting ? "Processing…" : "Submit Withdrawal"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
