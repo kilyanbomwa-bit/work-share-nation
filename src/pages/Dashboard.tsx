@@ -77,9 +77,10 @@ const Dashboard = () => {
             <h1 className="text-4xl font-black">Hello, {profile?.full_name?.toUpperCase()}</h1>
             <p className="mt-2 text-muted-foreground">Welcome back. Quick overview of your activity.</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button variant="hero" onClick={handleStartTasking}>Start Tasking</Button>
             <Button variant="glow" onClick={() => toast.info("Task posting opens in phase 2.")}>Post Task</Button>
+            <Button variant="secondary" onClick={() => setWithdrawOpen(true)}>Withdraw</Button>
           </div>
         </div>
 
